@@ -1,0 +1,11 @@
+{
+  "name": "@app/server",
+  "type": "module",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js"
+  }
+}

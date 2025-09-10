@@ -1,7 +1,16 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "baseUrl": "./src",
+    "paths": {
+      "@config": ["config"],
+      "@routes/*": ["routes/*"],
+      "@webhooks/*": ["webhooks/*"],
+      "@services/*": ["services/*"],
+      "@core/*": ["core/*"],
+      "@lib/*": ["lib/*"]
+    }
   },
   "include": ["src"]
 }

@@ -2,6 +2,14 @@ import { env } from "../config";
 
 const BASE = "https://api.telnyx.com/v2";
 
+type DialParams = {
+  to: string;
+  from: string;
+  connection_id: string;
+  client_state: string;
+  command_id?: string;
+};
+
 async function tFetch(path: string, init: RequestInit = {}) {
   const headers = {
     "Content-Type": "application/json",
@@ -16,20 +24,15 @@ async function tFetch(path: string, init: RequestInit = {}) {
   return res.json();
 }
 
-/** Marca una llamada (Dial) */
-export async function dial(params: {
-  to: string;
-  from: string;
-  connection_id: string;
-  client_state?: string;
-}) {
+/** Make a call (Dial) */
+export async function dial(params: DialParams) {
   return tFetch("/calls", {
     method: "POST",
     body: JSON.stringify(params),
   });
 }
 
-/** Bridge: une A con B */
+/** Bridge: match A with B */
 export async function bridge(aCallControlId: string, bCallControlId: string) {
   return tFetch(`/calls/${aCallControlId}/actions/bridge`, {
     method: "POST",

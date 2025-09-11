@@ -5,6 +5,7 @@ import { v4 as uuid } from "uuid";
 import { sessions } from "../core/state";
 import { dial } from "../services/telnyx.client";
 import { env } from "../config";
+import { publishSession } from "@core/events";
 
 const router = Router();
 
@@ -31,6 +32,7 @@ router.post("/bridge", async (req, res) => {
     b: { status: "dialing" },
     status: "a_dialing",
   });
+  publishSession(sessionId, sessions.get(sessionId)!);
 
   // client_state base64 para correlacionar los webhooks de A
   const clientStateA = Buffer.from(

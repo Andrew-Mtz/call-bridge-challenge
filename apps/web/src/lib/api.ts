@@ -7,9 +7,11 @@ export type StartBridgeResp = {
   sessionId: string;
 };
 
-const BASE = import.meta.env.VITE_API_BASE || "http://localhost:3001";
+export const BASE = import.meta.env.VITE_API_BASE || "http://localhost:3001";
 
-export async function startBridge(body: StartBridgeBody): Promise<StartBridgeResp> {
+export async function startBridge(
+  body: StartBridgeBody
+): Promise<StartBridgeResp> {
   const res = await fetch(`${BASE}/api/calls/bridge`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

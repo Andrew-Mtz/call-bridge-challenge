@@ -1,6 +1,6 @@
 import { Router } from "express";
-import callsRouter from "./calls.routes";
-import eventsRouter from "./events.routes";
+import callsRouter from "@routes/calls.routes";
+import eventsRouter from "@routes/events.routes";
 
 const api = Router();
 api.use("/calls", callsRouter);

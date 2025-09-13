@@ -1,13 +1,13 @@
-// apps/server/src/routes.calls.ts
 import { Router } from "express";
 import { z } from "zod";
 import { v4 as uuid } from "uuid";
-import { sessions } from "../core/state";
-import { dial } from "../services/telnyx.client";
-import { env } from "../config";
+import { sessions } from "@core/state";
+import { env } from "@config";
 import { publishSession } from "@core/events";
+import { getProvider } from "@providers/factory";
 
 const router = Router();
+const provider = getProvider();
 
 const PhoneE164 = z.string().regex(/^\+\d{7,15}$/);
 const StartSchema = z.object({
@@ -23,7 +23,7 @@ router.post("/bridge", async (req, res) => {
   const { fromPhone, toPhone } = parsed.data;
   const sessionId = uuid();
 
-  // crear sesión y marcar leg A
+  // create session and mark leg A
   sessions.set(sessionId, {
     sessionId,
     fromPhone,
@@ -34,17 +34,18 @@ router.post("/bridge", async (req, res) => {
   });
   publishSession(sessionId, sessions.get(sessionId)!);
 
-  // client_state base64 para correlacionar los webhooks de A
+  // client_state base64 to correlate webhooks from A
   const clientStateA = Buffer.from(
     JSON.stringify({ sessionId, leg: "A" })
   ).toString("base64");
 
   try {
-    await dial({
+    await provider.dial({
       to: fromPhone,
       from: env.TELNYX_NUMBER!,
-      connection_id: env.TELNYX_CONNECTION_ID!,
-      client_state: clientStateA,
+      sessionId,
+      leg: "A",
+      commandId: `dial:${sessionId}:A:1`,
     });
 
     return res.status(202).json({ sessionId });

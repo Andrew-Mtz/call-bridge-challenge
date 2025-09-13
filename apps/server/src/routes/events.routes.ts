@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { sessions } from "../core/state";
-import { getEmitter } from "../core/events";
+import { sessions } from "@core/state";
+import { getEmitter } from "@core/events";
 
 const router = Router();
 

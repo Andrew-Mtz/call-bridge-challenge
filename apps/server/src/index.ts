@@ -1,5 +1,5 @@
 import pino from "pino";
-import { env } from "./config";
+import { env } from "@config";
 import { createApp } from "./app";
 
 const log = pino({ name: "server" });

@@ -9,7 +9,8 @@
       "@webhooks/*": ["webhooks/*"],
       "@services/*": ["services/*"],
       "@core/*": ["core/*"],
-      "@lib/*": ["lib/*"]
+      "@lib/*": ["lib/*"],
+      "@providers/*": ["providers/*"]
     }
   },
   "include": ["src"]

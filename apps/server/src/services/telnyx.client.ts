@@ -1,4 +1,4 @@
-import { env } from "../config";
+import { env } from "@config";
 
 const BASE = "https://api.telnyx.com/v2";
 

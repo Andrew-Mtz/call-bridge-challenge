@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
-import { env } from "./config";
-import apiRouter from "./routes/index.routes";
-import { telnyxWebhook } from "./webhooks/telnyx.webhook";
+import { env } from "@config";
+import apiRouter from "@routes/index.routes";
+import { telnyxWebhook } from "@webhooks/telnyx.webhook";
 
 export function createApp() {
   const app = express();

@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import type { Session } from "./state";
+import type { Session } from "@core/state";
 
 const emitters = new Map<string, EventEmitter>();
 const counters = new Map<string, number>();

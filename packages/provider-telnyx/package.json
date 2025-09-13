@@ -1,0 +1,24 @@
+{
+  "name": "@call-provider/telnyx",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format esm,cjs",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@call-provider/core": "workspace:^",
+    "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2",
+    "vitest": "^2.1.9"
+  }
+}

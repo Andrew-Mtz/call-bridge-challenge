@@ -1,5 +1,5 @@
 import nacl from "tweetnacl";
-import { env } from "../config";
+import { env } from "@config";
 
 function b64ToUint8(b64: string) {
   return new Uint8Array(Buffer.from(b64, "base64"));

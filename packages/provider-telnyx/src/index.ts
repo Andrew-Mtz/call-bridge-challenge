@@ -1,10 +1,22 @@
-import type { CallProvider, DialParams, DialResult, BridgeParams, ProviderEvent } from "@call-provider/core";
+import type {
+  CallProvider,
+  DialParams,
+  DialResult,
+  BridgeParams,
+  ProviderEvent,
+  WebRTCTokenParams,
+  WebRTCTokenResult,
+} from "@call-provider/core";
 import { makeClient, type TelnyxConfig } from "./client";
 import { verifySignature as telnyxVerify } from "./verify";
 
-export type CreateTelnyxProviderOptions = TelnyxConfig & { publicKeyB64: string };
+export type CreateTelnyxProviderOptions = TelnyxConfig & {
+  publicKeyB64: string;
+};
 
-export function createTelnyxProvider(opts: CreateTelnyxProviderOptions): CallProvider {
+export function createTelnyxProvider(
+  opts: CreateTelnyxProviderOptions
+): CallProvider {
   const http = makeClient(opts);
   return {
     name: "telnyx",
@@ -13,6 +25,10 @@ export function createTelnyxProvider(opts: CreateTelnyxProviderOptions): CallPro
     },
     async bridge(p: BridgeParams): Promise<void> {
       return http.bridge(p);
+    },
+    async createWebRTCToken(p: WebRTCTokenParams): Promise<WebRTCTokenResult> {
+      const { token } = await http.createWebRTCToken(p.credentialId);
+      return { token };
     },
     verifySignature(raw, headers) {
       return telnyxVerify(raw, headers, opts.publicKeyB64);
@@ -29,7 +45,9 @@ export function createTelnyxProvider(opts: CreateTelnyxProviderOptions): CallPro
 
         if (clientStateB64) {
           try {
-            const cs = JSON.parse(Buffer.from(clientStateB64, "base64").toString("utf8"));
+            const cs = JSON.parse(
+              Buffer.from(clientStateB64, "base64").toString("utf8")
+            );
             sessionId = cs?.sessionId;
             leg = cs?.leg ?? null;
           } catch {}
@@ -38,8 +56,8 @@ export function createTelnyxProvider(opts: CreateTelnyxProviderOptions): CallPro
         const map: Record<string, ProviderEvent["type"]> = {
           "call.initiated": "initiated",
           "call.answered": "answered",
-          "call.bridged":  "bridged",
-          "call.hangup":   "hangup",
+          "call.bridged": "bridged",
+          "call.hangup": "hangup",
         };
         const type = map[eventType];
         if (!type) return null;
@@ -52,11 +70,11 @@ export function createTelnyxProvider(opts: CreateTelnyxProviderOptions): CallPro
           from: payload?.from,
           callControlId: payload?.call_control_id,
           sessionId,
-          raw: envelope
+          raw: envelope,
         };
       } catch {
         return null;
       }
-    }
+    },
   };
 }

@@ -9,6 +9,7 @@ const EnvSchema = z.object({
   TELNYX_CONNECTION_ID: z.string().optional(),
   TELNYX_NUMBER: z.string().optional(), // E.164
   WEBHOOK_SECRET_PATH: z.string().default("telnyx"),
+  TELNYX_WEBRTC_CREDENTIAL_ID: z.string().optional(),
 
   CALL_PROVIDER: z.string().default("telnyx"),
 });

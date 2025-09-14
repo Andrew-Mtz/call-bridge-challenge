@@ -20,17 +20,31 @@ export interface DialParams {
   commandId?: string;
 }
 
-export interface DialResult { accepted: boolean; }
+export interface DialResult {
+  accepted: boolean;
+}
 
 export interface BridgeParams {
   aCallControlId: string;
   bCallControlId: string;
 }
 
+export interface WebRTCTokenParams {
+  credentialId: string; // Telnyx telephony credential ID
+}
+
+export interface WebRTCTokenResult {
+  token: string; // JWT to use in @telnyx/webrtc
+}
+
 export interface CallProvider {
   name: string;
   dial(p: DialParams): Promise<DialResult>;
   bridge(p: BridgeParams): Promise<void>;
-  verifySignature(raw: Buffer, headers: Record<string, string | string[] | undefined>): boolean;
+  createWebRTCToken(p: WebRTCTokenParams): Promise<WebRTCTokenResult>;
+  verifySignature(
+    raw: Buffer,
+    headers: Record<string, string | string[] | undefined>
+  ): boolean;
   parseEvent(envelope: unknown): ProviderEvent | null;
 }

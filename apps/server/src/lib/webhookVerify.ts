@@ -5,7 +5,7 @@ function b64ToUint8(b64: string) {
   return new Uint8Array(Buffer.from(b64, "base64"));
 }
 function hexToUint8(hex: string) {
-  return new Uint8Array(hex.match(/.{1,2}/g)!.map(b => parseInt(b, 16)));
+  return new Uint8Array(hex.match(/.{1,2}/g)!.map((b) => parseInt(b, 16)));
 }
 
 export function verifyTelnyxSignature(
@@ -19,7 +19,6 @@ export function verifyTelnyxSignature(
 
   const msg = Buffer.concat([Buffer.from(ts), Buffer.from("|"), rawBody]);
 
-  // firma puede venir en base64; fallback a hex por si acaso
   let sigU8: Uint8Array;
   try {
     sigU8 = b64ToUint8(sig);

@@ -25,7 +25,7 @@ export function ModeTabs({ value, onChange }: Props) {
   return (
     <div style={{ display: "flex", gap: 10 }}>
       <Tab id="pstn" label="PSTN ↔ PSTN" />
-      <Tab id="webrtc" label="WebRTC (soon)" disabled />
+      <Tab id="webrtc" label="WebRTC" />
     </div>
   );
 }

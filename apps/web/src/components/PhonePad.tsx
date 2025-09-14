@@ -1,16 +1,16 @@
 import { useEffect, useRef, useCallback } from "react";
 
 type Props = {
-  title: string;              // "From" | "To"
-  status?: string;            // "calling" | "holding" | "idle"
-  value: string;              // current number
+  title: string;
+  status?: string;
+  value: string;
   onChange: (v: string) => void;
   disabled?: boolean;
   sx?: React.CSSProperties;
 };
 
-const KEYS = ["1","2","3","4","5","6","7","8","9","+","0","←"];
-const MAX_E164_DIGITS = 15;    // Max digits (not counting the leading '+')
+const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "0", "←"];
+const MAX_E164_DIGITS = 15; // Max digits (not counting the leading '+')
 
 /**
  * Compute the next value enforcing E.164 constraints:
@@ -35,15 +35,25 @@ function nextValueE164(curr: string, key: string) {
   return curr + key;
 }
 
-export function PhonePad({ title, status = "idle", value, onChange, disabled, sx }: Props) {
+export function PhonePad({
+  title,
+  status = "idle",
+  value,
+  onChange,
+  disabled,
+  sx,
+}: Props) {
   const screenRef = useRef<HTMLDivElement>(null);
 
   // Use useCallback so the effect can safely depend on `press` (no ESLint warning)
-  const press = useCallback((k: string) => {
-    if (disabled) return;
-    const v = nextValueE164(value, k);
-    if (v !== value) onChange(v);
-  }, [disabled, value, onChange]);
+  const press = useCallback(
+    (k: string) => {
+      if (disabled) return;
+      const v = nextValueE164(value, k);
+      if (v !== value) onChange(v);
+    },
+    [disabled, value, onChange]
+  );
 
   // Physical keyboard support: digits, '+', Backspace
   useEffect(() => {
@@ -136,12 +146,22 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
   },
   sideLeft: {
-    position: "absolute", left: -4, top: 90, width: 3, height: 70,
-    borderRadius: 2, background: "#1f2937"
+    position: "absolute",
+    left: -4,
+    top: 90,
+    width: 3,
+    height: 70,
+    borderRadius: 2,
+    background: "#1f2937",
   },
   sideRight: {
-    position: "absolute", right: -4, top: 140, width: 3, height: 50,
-    borderRadius: 2, background: "#1f2937"
+    position: "absolute",
+    right: -4,
+    top: 140,
+    width: 3,
+    height: 50,
+    borderRadius: 2,
+    background: "#1f2937",
   },
   screen: {
     height: "100%",
@@ -155,24 +175,39 @@ const styles: Record<string, React.CSSProperties> = {
     padding: 14,
     outline: "none",
   },
-  notchWrap: { display: "grid", placeItems: "center", height: 8, marginTop: -2 },
+  notchWrap: {
+    display: "grid",
+    placeItems: "center",
+    height: 8,
+    marginTop: -2,
+  },
   notch: {
-    width: 68, height: 6, borderRadius: 999,
-    background: "#0f172a", border: "1px solid #1f2937"
+    width: 68,
+    height: 6,
+    borderRadius: 999,
+    background: "#0f172a",
+    border: "1px solid #1f2937",
   },
   topRow: {
-    display: "flex", alignItems: "center", justifyContent: "space-between",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   title: { fontWeight: 700, color: "var(--text)" },
   status: {
-    fontSize: 12, padding: "2px 8px", borderRadius: 999,
+    fontSize: 12,
+    padding: "2px 8px",
+    borderRadius: 999,
     border: "1px solid transparent",
     textTransform: "capitalize",
   },
   numberBox: {
-    display: "grid", placeItems: "center",
-    background: "#111827", color: "var(--text)",
-    borderRadius: 16, minHeight: "clamp(90px, 18vh, 150px)",
+    display: "grid",
+    placeItems: "center",
+    background: "#111827",
+    color: "var(--text)",
+    borderRadius: 16,
+    minHeight: "clamp(90px, 18vh, 150px)",
     fontSize: "clamp(18px, 2.8vw, 26px)",
     letterSpacing: "0.5px",
     border: "1px solid #1f2937",
@@ -205,7 +240,10 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: "not-allowed",
   },
   homeBar: {
-    height: 5, width: 80, borderRadius: 999, background: "#1f2937",
+    height: 5,
+    width: 80,
+    borderRadius: 999,
+    background: "#1f2937",
     margin: "4px auto 0",
   },
 };

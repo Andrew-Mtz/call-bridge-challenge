@@ -22,7 +22,6 @@ router.post("/token", async (_req, res) => {
         .status(500)
         .json({ error: "Missing TELNYX_WEBRTC_CREDENTIAL_ID" });
     }
-    console.log(env.TELNYX_WEBRTC_CREDENTIAL_ID);
     const { token } = await prov.createWebRTCToken({
       credentialId: env.TELNYX_WEBRTC_CREDENTIAL_ID,
     });

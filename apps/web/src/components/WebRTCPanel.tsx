@@ -34,7 +34,7 @@ export default function WebRTCPanel() {
         <div
           style={{
             opacity: connected ? 0.5 : 1,
-            pointerEvents: connected ? ("none" as const) : "auto",
+            pointerEvents: connected ? "none" : "auto",
           }}
         >
           <ProviderToggle value={provider} onChange={setProvider} />

@@ -220,7 +220,7 @@ export function WebRTCDialer({
       return;
     }
     setError(null);
-    setHasCall(true); // ← evita flicker incluso si llega "new"
+    setHasCall(true);
     setCallState("requesting");
     onStatusRight("calling");
 
@@ -243,11 +243,18 @@ export function WebRTCDialer({
         clientRef.current?.off("telnyx.notification");
         clientRef.current?.off("telnyx.socket.close");
         clientRef.current = null;
-      } catch {
-        /* ignore */
+      } catch (e) {
+        console.error("[WH] SSE error", e);
       }
     } finally {
-      // el handler de notificaciones bajará hasCall en estados terminales
+      callRef.current = null;
+      clientRef.current = null;
+      setConnected(false);
+      setCallState(null);
+      setHasCall(false);
+      setMuted(false);
+      onConnectedChange?.(false);
+      onStatusRight("idle");
     }
   }
 

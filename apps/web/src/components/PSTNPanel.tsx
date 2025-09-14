@@ -33,7 +33,6 @@ export default function PSTNPanel() {
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
 
-  // Local UI states (T3 this will come from SSE)
   const [stateFrom, setStateFrom] = useState("idle");
   const [stateTo, setStateTo] = useState("idle");
 
@@ -61,7 +60,7 @@ export default function PSTNPanel() {
     es.addEventListener("update", handler);
     es.onmessage = handler;
     es.onerror = () => {
-      /* optional: show "reconnecting..." */
+      console.error("[WH] SSE error");
     };
   }
 

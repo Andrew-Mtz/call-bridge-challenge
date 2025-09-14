@@ -7,17 +7,6 @@ import { getProvider } from "providers/factory";
 
 const provider = getProvider();
 
-function decodeClientState(
-  b64?: string
-): { sessionId: string; leg: "A" | "B" } | null {
-  if (!b64) return null;
-  try {
-    return JSON.parse(Buffer.from(b64, "base64").toString("utf8"));
-  } catch {
-    return null;
-  }
-}
-
 const seenEvents = new Set<string>();
 function isDuplicate(id?: string) {
   if (!id) return false;
@@ -63,9 +52,12 @@ export async function telnyxWebhook(req: Request, res: Response) {
     leg: evt.leg,
   });
 
-  // 1) Deduplicate (optional but helpful if ngrok/infra resends)
- if (isDuplicate(evt.id)) {
-    log(sessionId, `duplicate event ignored`, { eventId: evt.id, event_type: evt.type });
+  // 1) Deduplicate
+  if (isDuplicate(evt.id)) {
+    log(sessionId, `duplicate event ignored`, {
+      eventId: evt.id,
+      event_type: evt.type,
+    });
     return res.status(200).send("ok");
   }
 
@@ -86,12 +78,18 @@ export async function telnyxWebhook(req: Request, res: Response) {
       s.a.callControlId = evt.callControlId;
       s.a.status = "dialing";
       s.status = "a_dialing";
-      log(sessionId, "A leg initiated", { callControlId: s.a.callControlId, to: evt.to });
+      log(sessionId, "A leg initiated", {
+        callControlId: s.a.callControlId,
+        to: evt.to,
+      });
     } else if (evt.leg === "B") {
       s.b.callControlId = evt.callControlId;
       s.b.status = "dialing";
       s.status = "b_dialing";
-      log(sessionId, "B leg initiated", { callControlId: s.b.callControlId, to: evt.to });
+      log(sessionId, "B leg initiated", {
+        callControlId: s.b.callControlId,
+        to: evt.to,
+      });
     }
     publishSession(s.sessionId, s);
     return res.status(200).send("ok");
@@ -99,7 +97,8 @@ export async function telnyxWebhook(req: Request, res: Response) {
 
   // 3) A answered → dial B
   if (evt.type === "answered" && evt.leg === "A") {
-    const isRightCall = !!s.a.callControlId && evt.callControlId === s.a.callControlId;
+    const isRightCall =
+      !!s.a.callControlId && evt.callControlId === s.a.callControlId;
     const numberMatches = evt.to === s.fromPhone;
 
     log(sessionId, "A answered", {
@@ -117,7 +116,8 @@ export async function telnyxWebhook(req: Request, res: Response) {
       s.status = "a_answered";
 
       // idempotency para B
-      const commandIdB = (s as any).b?.dialCommandId || `dial:${s.sessionId}:B:1`;
+      const commandIdB =
+        (s as any).b?.dialCommandId || `dial:${s.sessionId}:B:1`;
       (s as any).b = { ...(s as any).b, dialCommandId: commandIdB };
 
       log(sessionId, "Dialing B", {
@@ -142,7 +142,8 @@ export async function telnyxWebhook(req: Request, res: Response) {
 
   // 4) B answered → bridge A <-> B
   if (evt.type === "answered" && evt.leg === "B") {
-    const isRightCall = !!s.b.callControlId && evt.callControlId === s.b.callControlId;
+    const isRightCall =
+      !!s.b.callControlId && evt.callControlId === s.b.callControlId;
     const numberMatches = evt.to === s.toPhone;
 
     s.b.status = "answered";
@@ -154,9 +155,20 @@ export async function telnyxWebhook(req: Request, res: Response) {
     });
     publishSession(s.sessionId, s);
 
-    if (isRightCall && numberMatches && s.a.callControlId && s.b.callControlId) {
-      log(sessionId, "Bridging A <-> B", { a: s.a.callControlId, b: s.b.callControlId });
-      await provider.bridge({ aCallControlId: s.a.callControlId, bCallControlId: s.b.callControlId });
+    if (
+      isRightCall &&
+      numberMatches &&
+      s.a.callControlId &&
+      s.b.callControlId
+    ) {
+      log(sessionId, "Bridging A <-> B", {
+        a: s.a.callControlId,
+        b: s.b.callControlId,
+      });
+      await provider.bridge({
+        aCallControlId: s.a.callControlId,
+        bCallControlId: s.b.callControlId,
+      });
       s.a.status = "bridged";
       s.b.status = "bridged";
       s.status = "bridged";
@@ -167,7 +179,7 @@ export async function telnyxWebhook(req: Request, res: Response) {
   }
 
   // 5) call.bridged (confirmation that they are bridged)
- if (evt.type === "bridged") {
+  if (evt.type === "bridged") {
     if (evt.leg === "A") s.a.status = "bridged";
     if (evt.leg === "B") s.b.status = "bridged";
     s.status = "bridged";

@@ -1,0 +1,15 @@
+:root {
+  --accent: #0ea5e9;
+}
+
+body[data-provider="telnyx"] {
+  --accent: #00e3aa;
+}
+
+body[data-provider="sinch"] {
+  --accent: #ffbe3c;
+}
+
+body[data-provider="infobip"] {
+  --accent: #fc6423;
+}

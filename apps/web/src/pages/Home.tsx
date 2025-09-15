@@ -12,7 +12,9 @@ export default function Home() {
         <ModeTabs value={mode} onChange={setMode} />
       </div>
 
-      {mode === "pstn" ? <PSTNPanel /> : <WebRTCPanel />}
+      {mode === "pstn" ?
+        <PSTNPanel />
+      : <WebRTCPanel />}
     </div>
   );
 }

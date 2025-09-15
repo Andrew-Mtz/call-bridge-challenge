@@ -1,17 +1,22 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { PhonePad } from "../components/PhonePad";
 import { ProviderToggle } from "../components/ProviderToggle";
 import { WebRTCDialer } from "../components/WebRTCDialer";
+import { useProviderTheme } from "../styles/useProviderTheme";
+import { Timer } from "./Timer";
 
 type DialerStatus = "idle" | "calling" | "in-call" | "ended";
+type Provider = "telnyx" | "sinch" | "infobip";
 
 export default function WebRTCPanel() {
-  const [provider, setProvider] = useState<"telnyx" | "sinch" | "infobip">(
-    "telnyx"
-  );
+  const [provider, setProvider] = useState<Provider>("telnyx");
+  useProviderTheme(provider);
+
   const [to, setTo] = useState("");
   const [stateTo, setStateTo] = useState<DialerStatus>("idle");
   const [connected, setConnected] = useState(false);
+
+  const inCall = useMemo(() => stateTo === "in-call", [stateTo]);
 
   return (
     <div style={styles.row}>
@@ -21,16 +26,23 @@ export default function WebRTCPanel() {
         value={to}
         onChange={setTo}
         disabled={false}
+        historyKey="webrtc-to"
         sx={{ justifySelf: "end" }}
       />
+
       <div style={styles.controlsCol}>
-        {/* Dialer renders Connect / Disconnect / Call / Hang up / Mute */}
         <WebRTCDialer
           to={to}
           onStatusRight={setStateTo}
           onConnectedChange={setConnected}
         />
-        {/* Provider selection only before connecting */}
+
+        {inCall && (
+          <div style={styles.timerBox}>
+            <strong>Call time:</strong> <Timer running={inCall} />
+          </div>
+        )}
+
         <div
           style={{
             opacity: connected ? 0.5 : 1,
@@ -57,5 +69,13 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 16,
     placeItems: "center",
     justifyContent: "center",
+  },
+  timerBox: {
+    border: "1px solid #1f2937",
+    background: "#0f172a",
+    borderRadius: 12,
+    padding: 10,
+    width: 200,
+    textAlign: "center",
   },
 };

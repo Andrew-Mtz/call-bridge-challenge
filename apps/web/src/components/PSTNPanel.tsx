@@ -2,29 +2,40 @@ import { useState, useEffect, useRef } from "react";
 import { BASE, startBridge } from "../lib/api";
 import { PhonePad } from "../components/PhonePad";
 import { ProviderToggle } from "../components/ProviderToggle";
+import { useProviderTheme } from "../styles/useProviderTheme";
+import { addHistory } from "../lib/callHistory";
+import { Timer } from "./Timer";
 
-export default function PSTNPanel() {
+type Provider = "telnyx" | "sinch" | "infobip";
+
+function mapLegStatus(s?: string) {
+  switch (s) {
+    case "dialing":
+      return "calling";
+    case "answered":
+      return "answered";
+    case "bridged":
+      return "in-call";
+    case "ended":
+      return "ended";
+    default:
+      return "idle";
+  }
+}
+
+export default function PstnPanel() {
   const esRef = useRef<EventSource | null>(null);
-  const [provider, setProvider] = useState<"telnyx" | "sinch" | "infobip">(
-    "telnyx"
-  );
+  const [provider, setProvider] = useState<Provider>("telnyx");
+  useProviderTheme(provider);
 
   const looksE164 = (v: string) => /^\+\d{7,15}$/.test(v);
-
-  function mapLegStatus(s?: string) {
-    switch (s) {
-      case "dialing":
-        return "calling";
-      case "answered":
-        return "answered";
-      case "bridged":
-        return "in-call";
-      case "ended":
-        return "ended";
-      default:
-        return "idle";
-    }
-  }
+  const sanitizeE164 = (v: string) => {
+    // allow leading +, digits only after, max 16 chars total
+    let out = v.replace(/[^\d+]/g, "");
+    if (out.startsWith("+")) out = "+" + out.slice(1).replace(/[^\d]/g, "");
+    else out = out.replace(/[^\d]/g, "");
+    return out.slice(0, 16);
+  };
 
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -36,6 +47,9 @@ export default function PSTNPanel() {
   const [stateFrom, setStateFrom] = useState("idle");
   const [stateTo, setStateTo] = useState("idle");
 
+  // Call timer: start on bridged, stop on ended
+  const [inCall, setInCall] = useState(false);
+
   function openSSE(id: string) {
     esRef.current?.close();
     const es = new EventSource(`${BASE}/api/calls/${id}/events`);
@@ -44,14 +58,18 @@ export default function PSTNPanel() {
     const handler = (e: MessageEvent) => {
       try {
         const { session } = JSON.parse(e.data);
-
         setStateFrom(mapLegStatus(session?.a?.status));
-        setStateTo((prev) => {
+        setStateTo(prev => {
           const b = session?.b?.status as string | undefined;
           return b ? mapLegStatus(b) : prev;
         });
 
-        if (session?.status === "ended") es.close();
+        // Timer control
+        if (session?.status === "bridged") setInCall(true);
+        if (session?.status === "ended") {
+          setInCall(false);
+          es.close();
+        }
       } catch {
         /* ignore */
       }
@@ -59,9 +77,7 @@ export default function PSTNPanel() {
 
     es.addEventListener("update", handler);
     es.onmessage = handler;
-    es.onerror = () => {
-      console.error("[WH] SSE error");
-    };
+    es.onerror = () => {};
   }
 
   useEffect(() => () => esRef.current?.close(), []);
@@ -70,10 +86,13 @@ export default function PSTNPanel() {
     if (!from || !to || loading || provider !== "telnyx") return;
     setError(null);
     setLoading(true);
+    setInCall(false);
     setStateFrom("calling");
     setStateTo("holding");
     try {
       const { sessionId } = await startBridge({ fromPhone: from, toPhone: to });
+      addHistory("from", from);
+      addHistory("to", to);
       setSessionId(sessionId);
       openSSE(sessionId);
     } catch (e: unknown) {
@@ -98,19 +117,24 @@ export default function PSTNPanel() {
         title="From"
         status={stateFrom}
         value={from}
-        onChange={setFrom}
+        onChange={v => setFrom(sanitizeE164(v))}
         disabled={loading}
+        historyKey="from"
         sx={{ justifySelf: "end" }}
       />
       <div style={styles.centerCol}>
         <div style={styles.connector}>
           <div
-            style={{ ...styles.half, opacity: stateFrom !== "idle" ? 1 : 0.3 }}
+            style={{
+              ...styles.half,
+              opacity: stateFrom !== "idle" ? 1 : 0.3,
+            }}
           />
           <div
             style={{ ...styles.half, opacity: stateTo !== "idle" ? 1 : 0.3 }}
           />
         </div>
+
         <button
           onClick={dial}
           disabled={!canDial}
@@ -119,7 +143,15 @@ export default function PSTNPanel() {
         >
           {loading ? "Dialing..." : "Call"}
         </button>
+
         <ProviderToggle value={provider} onChange={setProvider} />
+
+        {inCall && (
+          <div style={styles.timerBox}>
+            <strong>Call time:</strong> <Timer running={inCall} />
+          </div>
+        )}
+
         {sessionId && (
           <div style={styles.sessionBox}>
             <div>
@@ -133,8 +165,9 @@ export default function PSTNPanel() {
         title="To"
         status={stateTo}
         value={to}
-        onChange={setTo}
+        onChange={v => setTo(sanitizeE164(v))}
         disabled={loading}
+        historyKey="to"
         sx={{ justifySelf: "start" }}
       />
     </div>
@@ -157,7 +190,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   callBtn: {
     padding: "12px 18px",
-    background: "#0ea5e9",
+    background: "var(--accent)",
     border: "none",
     borderRadius: 12,
     color: "#fff",
@@ -183,7 +216,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   half: {
     height: "100%",
-    background: "#22d3ee",
+    background: "var(--accent)",
     borderRadius: 999,
     transition: "opacity 200ms ease",
   },
@@ -193,6 +226,14 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 12,
     padding: 12,
     width: 360,
+    textAlign: "center",
+  },
+  timerBox: {
+    border: "1px solid #1f2937",
+    background: "#0f172a",
+    borderRadius: 12,
+    padding: 10,
+    width: 200,
     textAlign: "center",
   },
   error: {

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { TelnyxRTC } from "@telnyx/webrtc";
 import { BASE } from "../lib/api";
+import { addHistory } from "../lib/callHistory";
 
 type TelnyxCallState =
   | "new"
@@ -48,10 +49,9 @@ type Props = {
   to: string;
   onStatusRight: (s: DialerStatus) => void;
   onConnectedChange?: (connected: boolean) => void;
-  cliFrom?: string;
 };
 
-// Estados que deben ocultar el botón "Call"
+// States to hide the "Call" button
 const CALLING_STATES = new Set([
   "new",
   "requesting",
@@ -60,7 +60,7 @@ const CALLING_STATES = new Set([
   "early",
   "active",
 ]);
-// Estados terminales que liberan la UI
+// States that enable UI
 const TERMINAL_STATES = new Set([
   "done",
   "hangup",
@@ -72,12 +72,7 @@ const TERMINAL_STATES = new Set([
   "disconnected",
 ]);
 
-export function WebRTCDialer({
-  to,
-  onStatusRight,
-  onConnectedChange,
-  cliFrom,
-}: Props) {
+export function WebRTCDialer({ to, onStatusRight, onConnectedChange }: Props) {
   const clientRef = useRef<TelnyxRTC | null>(null);
   const callRef = useRef<TelnyxCall | null>(null);
 
@@ -88,15 +83,12 @@ export function WebRTCDialer({
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const CLI =
-    (cliFrom ?? (import.meta.env.VITE_TELNYX_NUMBER as string | undefined)) ||
-    undefined;
   const isE164 = (v: string) => /^\+\d{7,15}$/.test(v);
 
   async function ensureMicPermission(): Promise<boolean> {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach((t) => t.stop());
+      stream.getTracks().forEach(t => t.stop());
       return true;
     } catch {
       return false;
@@ -133,9 +125,9 @@ export function WebRTCDialer({
         })
         .on("telnyx.error", (e: unknown) => {
           const msg =
-            typeof e === "object" && e && "message" in e
-              ? String((e as Error).message)
-              : "webrtc error";
+            typeof e === "object" && e && "message" in e ?
+              String((e as Error).message)
+            : "webrtc error";
           setError(msg);
           setConnecting(false);
         })
@@ -156,14 +148,13 @@ export function WebRTCDialer({
 
           setCallState(stLower);
 
-          // Mantener el “Call” oculto en todos los estados de establecimiento/activa
+          // Keep the “Call” hidden in all establishment/active states
           if (CALLING_STATES.has(stLower)) setHasCall(true);
           if (TERMINAL_STATES.has(stLower)) {
             setHasCall(false);
             setMuted(false);
           }
 
-          // Reflejar en el PhonePad
           if (
             stLower === "requesting" ||
             stLower === "trying" ||
@@ -186,9 +177,9 @@ export function WebRTCDialer({
       client.connect();
     } catch (e) {
       const msg =
-        typeof e === "object" && e && "message" in e
-          ? String((e as Error).message)
-          : "connect error";
+        typeof e === "object" && e && "message" in e ?
+          String((e as Error).message)
+        : "connect error";
       setError(msg);
       setConnecting(false);
     }
@@ -224,9 +215,10 @@ export function WebRTCDialer({
     setCallState("requesting");
     onStatusRight("calling");
 
+    addHistory("webrtc-to", to);
     clientRef.current.newCall({
       destinationNumber: to,
-      ...(CLI && isE164(CLI) ? { callerNumber: CLI } : {}),
+      callerNumber: import.meta.env.VITE_TELNYX_NUMBER,
       remoteElement: "remoteMedia",
       audio: true,
       video: false,
@@ -246,15 +238,6 @@ export function WebRTCDialer({
       } catch (e) {
         console.error("[WH] SSE error", e);
       }
-    } finally {
-      callRef.current = null;
-      clientRef.current = null;
-      setConnected(false);
-      setCallState(null);
-      setHasCall(false);
-      setMuted(false);
-      onConnectedChange?.(false);
-      onStatusRight("idle");
     }
   }
 
@@ -275,15 +258,14 @@ export function WebRTCDialer({
     <div style={sx.wrap}>
       <audio id="remoteMedia" autoPlay playsInline />
       <div style={sx.row}>
-        {!connected ? (
+        {!connected ?
           <button onClick={connect} disabled={connecting} style={sx.btnPrimary}>
             {connecting ? "Connecting..." : "Connect headset"}
           </button>
-        ) : (
-          <button onClick={disconnect} style={sx.btnGhost}>
+        : <button onClick={disconnect} style={sx.btnGhost}>
             Disconnect
           </button>
-        )}
+        }
 
         {connected && !hasCall && (
           <button onClick={makeCall} style={sx.btnPrimary}>

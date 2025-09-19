@@ -69,6 +69,7 @@ export default function PstnPanel() {
         if (session?.status === "ended") {
           setInCall(false);
           es.close();
+          setSessionId(null);
         }
       } catch {
         /* ignore */
@@ -83,14 +84,18 @@ export default function PstnPanel() {
   useEffect(() => () => esRef.current?.close(), []);
 
   async function dial() {
-    if (!from || !to || loading || provider !== "telnyx") return;
+    if (!from || !to || loading) return;
     setError(null);
     setLoading(true);
     setInCall(false);
     setStateFrom("calling");
     setStateTo("holding");
     try {
-      const { sessionId } = await startBridge({ fromPhone: from, toPhone: to });
+      const { sessionId } = await startBridge({
+        fromPhone: from,
+        toPhone: to,
+        provider,
+      });
       addHistory("from", from);
       addHistory("to", to);
       setSessionId(sessionId);
@@ -108,8 +113,7 @@ export default function PstnPanel() {
     }
   }
 
-  const canDial =
-    looksE164(from) && looksE164(to) && !loading && provider === "telnyx";
+  const canDial = looksE164(from) && looksE164(to) && !loading && !sessionId;
 
   return (
     <div style={styles.phonesRow}>
@@ -127,11 +131,14 @@ export default function PstnPanel() {
           <div
             style={{
               ...styles.half,
-              opacity: stateFrom !== "idle" ? 1 : 0.3,
+              opacity: stateFrom === "answered" || inCall ? 1 : 0.3,
             }}
           />
           <div
-            style={{ ...styles.half, opacity: stateTo !== "idle" ? 1 : 0.3 }}
+            style={{
+              ...styles.half,
+              opacity: stateTo === "answered" || inCall ? 1 : 0.3,
+            }}
           />
         </div>
 
@@ -139,7 +146,6 @@ export default function PstnPanel() {
           onClick={dial}
           disabled={!canDial}
           style={canDial ? styles.callBtn : styles.callBtnDisabled}
-          title={provider !== "telnyx" ? "Only Telnyx enabled for now" : ""}
         >
           {loading ? "Dialing..." : "Call"}
         </button>
@@ -181,6 +187,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 20,
     alignItems: "center",
     justifyItems: "center",
+    height: "80vh",
   },
   centerCol: {
     display: "grid",

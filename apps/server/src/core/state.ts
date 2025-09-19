@@ -6,6 +6,7 @@ export type LegState = {
 
 export type Session = {
   sessionId: string;
+  provider: "telnyx" | "infobip";
   fromPhone: string;
   toPhone: string;
   a: LegState;

@@ -41,8 +41,8 @@ export function WebRTCConnectorInfobip({
       const displayName = id.customIdentity?.trim() || undefined;
 
       const { token } = await getWebRTCToken("infobip", {
-        identity: chosenId, // <- ID real para el login WebRTC
-        displayName: displayName || chosenId, // <- nombre visible
+        identity: chosenId,
+        displayName: displayName || chosenId,
       });
 
       ib.connect(token, () => {

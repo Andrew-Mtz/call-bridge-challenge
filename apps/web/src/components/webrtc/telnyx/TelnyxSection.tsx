@@ -1,4 +1,3 @@
-// webrtc/TelnyxSection.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TelnyxClientProvider } from "../../../providers/telnyx/TelnyxClientProvider";
 import { useTelnyx } from "../../../providers/telnyx/context";
@@ -29,35 +28,27 @@ function TelnyxInner({ onConnectedChange }: Props) {
   const [status, setStatus] = useState<DialerStatus>("idle");
 
   const connected = tx.state.connected;
-  const hasCall = tx.state.hasCall; // ringing o activa
-  const isActive = tx.state.isActive; // solo activa
+  const hasCall = tx.state.hasCall;
+  const isActive = tx.state.isActive;
   const muted = tx.state.muted;
 
-  // Derivados UI
   const canCall = useMemo(
     () => connected && isE164(to) && !hasCall,
     [connected, to, hasCall]
   );
-  const showTimer = isActive; // el timer solo cuando la llamada está establecida
+  const showTimer = isActive;
 
-  // Transiciones de estado legibles (para el PhonePad/Timer)
   const prev = useRef({ hasCall: false, isActive: false });
   useEffect(() => {
     const p = prev.current;
 
     if (isActive && !p.isActive) {
-      // pasó a activa -> in-call
       setStatus("in-call");
     } else if (hasCall && !isActive) {
-      // está en ringing / early / trying
       setStatus("calling");
     } else if (!hasCall && (p.isActive || p.hasCall)) {
-      // terminó una llamada (veníamos de ringing o activa)
       setStatus("ended");
-      // opcional: después de unos segundos podrías volver a "idle"
-      // setTimeout(() => setStatus("idle"), 800);
     } else if (!hasCall && !isActive && !p.hasCall && !p.isActive) {
-      // estado base
       setStatus("idle");
     }
 
@@ -72,12 +63,10 @@ function TelnyxInner({ onConnectedChange }: Props) {
       return;
     }
     tx.callNumber(to, from);
-    // Inmediatamente mostramos “calling…”; el efecto luego lo mantendrá hasta active.
     setStatus("calling");
   }
 
   function hangUp() {
-    // Solo permitimos cortar si realmente está activa, per tu pedido.
     if (!isActive) return;
     tx.hangup();
     setStatus("ended");
@@ -98,7 +87,6 @@ function TelnyxInner({ onConnectedChange }: Props) {
         justifyItems: "center",
       }}
     >
-      {/* Columna izquierda: conector + controles + timer */}
       <div
         style={{
           display: "grid",
@@ -114,7 +102,6 @@ function TelnyxInner({ onConnectedChange }: Props) {
           onStatusRight={setStatus}
         />
 
-        {/* Controles de llamada */}
         {connected && (
           <div style={{ display: "flex", gap: 8 }}>
             {!hasCall && (
@@ -142,7 +129,6 @@ function TelnyxInner({ onConnectedChange }: Props) {
           </div>
         )}
 
-        {/* Timer solo en llamada activa */}
         {showTimer && (
           <div style={timerPill}>
             <strong>Call time: </strong>
@@ -151,7 +137,6 @@ function TelnyxInner({ onConnectedChange }: Props) {
         )}
       </div>
 
-      {/* Columna derecha: dialpad */}
       {connected && (
         <div
           style={{

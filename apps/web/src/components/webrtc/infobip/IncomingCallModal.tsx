@@ -1,12 +1,10 @@
-import * as React from "react";
-
 type Props = {
   from: string;
   open: boolean;
-  mode: "audio" | "video"; // ← nuevo: define el tipo de llamada entrante
-  onAnswer: () => void; // ← nuevo: un solo handler para responder
+  mode: "audio" | "video";
+  onAnswer: () => void;
   onReject: () => void;
-  preview?: React.ReactNode; // ← sólo se usa si mode === "video"
+  preview?: React.ReactNode;
 };
 
 export function IncomingCallModal({
@@ -57,7 +55,6 @@ export function IncomingCallModal({
           From: <strong>{from}</strong>
         </div>
 
-        {/* Preview sólo si es videollamada */}
         {isVideo && preview && (
           <div style={{ display: "grid", gap: 6, placeItems: "center" }}>
             <div style={{ fontSize: 12, opacity: 0.75 }}>Camera preview</div>
@@ -86,7 +83,7 @@ export function IncomingCallModal({
             onClick={onAnswer}
             style={{
               padding: "10px 14px",
-              background: "#16a34a", // verde
+              background: "#16a34a",
               border: "none",
               borderRadius: 10,
               color: "#fff",
@@ -103,7 +100,7 @@ export function IncomingCallModal({
             onClick={onReject}
             style={{
               padding: "10px 14px",
-              background: "#dc2626", // rojo
+              background: "#dc2626",
               border: "none",
               borderRadius: 10,
               color: "#fff",

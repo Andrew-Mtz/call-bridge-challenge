@@ -45,11 +45,6 @@ router.post("/bridge", async (req, res) => {
   });
   publishSession(sessionId, sessions.get(sessionId)!);
 
-  // client_state base64 to correlate webhooks from A
-  const clientStateA = Buffer.from(
-    JSON.stringify({ sessionId, leg: "A" })
-  ).toString("base64");
-
   try {
     await provider.dial({
       to: fromPhone,

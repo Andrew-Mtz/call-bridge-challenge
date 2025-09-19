@@ -1,4 +1,3 @@
-// WebRTCPanel.tsx
 import { useState } from "react";
 import { ProviderToggle } from "../components/ProviderToggle";
 import { useProviderTheme } from "../styles/useProviderTheme";
@@ -11,7 +10,6 @@ export default function WebRTCPanel() {
   const [provider, setProvider] = useState<Provider>("telnyx");
   useProviderTheme(provider);
 
-  // el panel sólo necesita saber si hay conexión para ocultar el toggle
   const [connected, setConnected] = useState(false);
 
   return (

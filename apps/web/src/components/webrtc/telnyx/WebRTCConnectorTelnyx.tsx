@@ -1,4 +1,3 @@
-// webrtc/WebRTCConnectorTelnyx.tsx
 import { useState } from "react";
 import { getWebRTCToken } from "../../../lib/api";
 import { useMicPermission } from "../../../hooks/useMicPermission";

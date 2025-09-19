@@ -1,4 +1,3 @@
-// providers/infobip/useInfobipClient.ts
 import { useCallback, useRef, useState } from "react";
 import {
   createInfobipRtc,
@@ -132,7 +131,7 @@ export function useInfobipClient() {
             }
             if (a) {
               a.srcObject = est.stream;
-              a.muted = false; // querés oír al otro
+              a.muted = false;
               a.onloadedmetadata = () =>
                 a.play().catch(() => {
                   /* require user gesture */
@@ -243,7 +242,7 @@ export function useInfobipClient() {
       }
       if (a) {
         a.srcObject = ev.stream;
-        a.muted = false; // querés oír al otro
+        a.muted = false;
         a.onloadedmetadata = () =>
           a.play().catch(() => {
             /* require user gesture */

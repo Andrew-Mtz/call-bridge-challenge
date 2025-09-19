@@ -35,8 +35,8 @@ export function useTelnyxClient() {
 
   const [state, setState] = useState({
     connected: false,
-    hasCall: false, // ringing o activa
-    isActive: false, // SOLO activa
+    hasCall: false,
+    isActive: false,
     muted: false,
     error: null as string | null,
   });
@@ -76,7 +76,6 @@ export function useTelnyxClient() {
 
         const st = String(call.state ?? "").toLowerCase() as TelnyxCallState;
 
-        // Estados “en curso” (incluye ringing / early / etc.) → hasCall = true
         if (
           st === "new" ||
           st === "requesting" ||
@@ -89,11 +88,10 @@ export function useTelnyxClient() {
           setState(s => ({
             ...s,
             hasCall: true,
-            isActive: st === "active", // ← SOLO aquí marcamos activa
+            isActive: st === "active",
           }));
         }
 
-        // Estados terminales → reseteo
         if (
           st === "done" ||
           st === "hangup" ||
@@ -119,7 +117,6 @@ export function useTelnyxClient() {
   }, []);
 
   const callNumber = useCallback((to: string, from: string) => {
-    // Comenzamos en ringing → isActive sigue false
     clientRef.current?.newCall({
       destinationNumber: to,
       callerNumber: from,
@@ -132,7 +129,7 @@ export function useTelnyxClient() {
 
   const toggleMute = useCallback(() => {
     const call = callRef.current;
-    if (!call || !state.isActive) return; // sólo tiene sentido si está activa
+    if (!call || !state.isActive) return;
     setState(s => {
       try {
         if (s.muted) call.unmuteAudio?.();
@@ -145,7 +142,6 @@ export function useTelnyxClient() {
   }, [state.isActive]);
 
   const hangup = useCallback(() => {
-    // sirve para colgar tanto en ringing como en activa
     try {
       callRef.current?.hangup?.();
     } catch {
@@ -154,9 +150,8 @@ export function useTelnyxClient() {
     setState(s => ({ ...s, hasCall: false, isActive: false, muted: false }));
   }, []);
 
-  // Si querés un botón “Cancel” específico para cuando sólo está sonando:
   const cancel = useCallback(() => {
-    if (!state.hasCall || state.isActive) return; // sólo si está sonando
+    if (!state.hasCall || state.isActive) return;
     try {
       callRef.current?.hangup?.();
     } catch {

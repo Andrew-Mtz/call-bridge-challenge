@@ -8,7 +8,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --dts --format esm,cjs"
+    "build": "tsup src/index.ts --dts --format esm,cjs",
+    "clean": "rimraf dist",
+    "dev": "tsup src/index.ts --dts --format esm,cjs --watch"
   },
   "devDependencies": {
     "@types/node": "^24.3.1",

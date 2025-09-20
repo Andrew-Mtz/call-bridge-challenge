@@ -105,23 +105,27 @@ function TelnyxInner({ onConnectedChange }: Props) {
         {connected && (
           <div style={{ display: "flex", gap: 8 }}>
             {!hasCall && (
-              <button onClick={call} disabled={!canCall} style={btnPrimary}>
+              <button
+                onClick={call}
+                disabled={!canCall}
+                style={styles.btnPrimary}
+              >
                 Call
               </button>
             )}
 
             {hasCall && !isActive && (
-              <button style={{ ...btnGhost, opacity: 0.8 }} disabled>
+              <button style={{ ...styles.btnGhost, opacity: 0.8 }} disabled>
                 Calling…
               </button>
             )}
 
             {isActive && (
               <>
-                <button onClick={hangUp} style={btnGhost}>
+                <button onClick={hangUp} style={styles.btnGhost}>
                   Hang up
                 </button>
-                <button onClick={toggleMute} style={btnGhost}>
+                <button onClick={toggleMute} style={styles.btnGhost}>
                   {muted ? "Unmute" : "Mute"}
                 </button>
               </>
@@ -130,7 +134,7 @@ function TelnyxInner({ onConnectedChange }: Props) {
         )}
 
         {showTimer && (
-          <div style={timerPill}>
+          <div style={styles.timerPill}>
             <strong>Call time: </strong>
             <Timer running />
           </div>
@@ -160,27 +164,29 @@ function TelnyxInner({ onConnectedChange }: Props) {
   );
 }
 
-const btnPrimary: React.CSSProperties = {
-  padding: "10px 14px",
-  background: "#0ea5e9",
-  border: "none",
-  borderRadius: 10,
-  color: "#fff",
-  fontWeight: 700,
-  cursor: "pointer",
-};
-const btnGhost: React.CSSProperties = {
-  padding: "10px 14px",
-  background: "#0f172a",
-  border: "1px solid #1f2937",
-  borderRadius: 10,
-  color: "#e5e7eb",
-  fontWeight: 600,
-  cursor: "pointer",
-};
-const timerPill: React.CSSProperties = {
-  border: "1px solid #1f2937",
-  background: "#0f172a",
-  borderRadius: 999,
-  padding: "6px 12px",
+const styles: Record<string, React.CSSProperties> = {
+  btnPrimary: {
+    padding: "10px 14px",
+    background: "#0ea5e9",
+    border: "none",
+    borderRadius: 10,
+    color: "#fff",
+    fontWeight: 700,
+    cursor: "pointer",
+  },
+  btnGhost: {
+    padding: "10px 14px",
+    background: "#0f172a",
+    border: "1px solid #1f2937",
+    borderRadius: 10,
+    color: "#e5e7eb",
+    fontWeight: 600,
+    cursor: "pointer",
+  },
+  timerPill: {
+    border: "1px solid #1f2937",
+    background: "#0f172a",
+    borderRadius: 999,
+    padding: "6px 12px",
+  },
 };

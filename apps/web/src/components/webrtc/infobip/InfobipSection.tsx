@@ -241,7 +241,7 @@ function InfobipInner({
   return (
     <div
       style={{
-        ...wrap,
+        ...styles.wrap,
         justifyContent: connected ? "space-between" : "center",
         height: connected ? "100%" : "auto",
       }}
@@ -271,17 +271,17 @@ function InfobipInner({
                       background: "#0b1220",
                     }}
                   />
-                  <div style={circleRow}>
+                  <div style={styles.circleRow}>
                     <button
                       onClick={toggleCamPreview}
-                      style={btnCircle}
+                      style={styles.btnCircle}
                       aria-label="Toggle camera"
                     >
                       <IconCamera />
                     </button>
                   </div>
                 </div>
-              : <div style={placeholderCam}>
+              : <div style={styles.placeholderCam}>
                   <div style={{ fontWeight: 600, marginBottom: 8 }}>
                     Permisos necesarios
                   </div>
@@ -295,12 +295,12 @@ function InfobipInner({
                     Para iniciar una videollamada necesitamos acceso a tu
                     cámara.
                   </div>
-                  <button onClick={requestCam} style={btnPrimary}>
+                  <button onClick={requestCam} style={styles.btnPrimary}>
                     Conceder cámara
                   </button>
                 </div>
               }
-              <div style={row}>
+              <div style={styles.row}>
                 <div style={{ display: "grid", gap: 6, flex: 1 }}>
                   <label style={{ fontWeight: 600 }}>
                     Peer identity (Infobip)
@@ -309,7 +309,7 @@ function InfobipInner({
                     value={to}
                     onChange={e => setTo(e.target.value)}
                     placeholder="p.ej. andy-B-1234"
-                    style={input}
+                    style={styles.input}
                   />
                 </div>
                 <div
@@ -317,7 +317,11 @@ function InfobipInner({
                 >
                   <button
                     onClick={callAudio}
-                    style={!isNonEmpty(to) ? btnPrimaryDisabled : btnPrimary}
+                    style={
+                      !isNonEmpty(to) ?
+                        styles.btnPrimaryDisabled
+                      : styles.btnPrimary
+                    }
                     disabled={!isNonEmpty(to)}
                   >
                     Call
@@ -326,8 +330,8 @@ function InfobipInner({
                     onClick={callVideo}
                     style={
                       !isNonEmpty(to) || isE164(to) || !camAllowed ?
-                        btnPrimaryDisabled
-                      : btnPrimary
+                        styles.btnPrimaryDisabled
+                      : styles.btnPrimary
                     }
                     disabled={!isNonEmpty(to) || isE164(to) || !camAllowed}
                   >
@@ -347,10 +351,10 @@ function InfobipInner({
                     playsInline
                     style={{ maxWidth: 420, borderRadius: 12, width: "100%" }}
                   />
-                  <div style={circleRow}>
+                  <div style={styles.circleRow}>
                     <button
                       onClick={toggleMute}
-                      style={btnCircle}
+                      style={styles.btnCircle}
                       aria-label="Toggle mute"
                     >
                       {ibCtx.state.muted ?
@@ -359,7 +363,7 @@ function InfobipInner({
                     </button>
                     <button
                       onClick={hangup}
-                      style={btnCircleDanger}
+                      style={styles.btnCircleDanger}
                       aria-label="Hang up"
                     >
                       <IconPhoneDown />
@@ -373,13 +377,13 @@ function InfobipInner({
                   <div style={{ opacity: 0.9, marginTop: 6 }}>
                     With: <strong>{peerName || "Unknown"}</strong>
                   </div>
-                  <div style={timerPill}>
+                  <div style={styles.timerPill}>
                     <strong>Call time:</strong> <Timer running />
                   </div>
-                  <div style={circleRow}>
+                  <div style={styles.circleRow}>
                     <button
                       onClick={toggleMute}
-                      style={btnCircle}
+                      style={styles.btnCircle}
                       aria-label="Toggle mute"
                     >
                       {ibCtx.state.muted ?
@@ -388,7 +392,7 @@ function InfobipInner({
                     </button>
                     <button
                       onClick={hangup}
-                      style={btnCircleDanger}
+                      style={styles.btnCircleDanger}
                       aria-label="Hang up"
                     >
                       <IconPhoneDown />
@@ -425,87 +429,91 @@ function InfobipInner({
     </div>
   );
 }
-const wrap: React.CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  gap: 14,
-  alignItems: "center",
-  height: "100%",
-};
-
-const row: React.CSSProperties = {
-  display: "flex",
-  alignItems: "flex-end",
-  gap: 12,
-  width: "min(680px, 92vw)",
-};
-
-const input: React.CSSProperties = {
-  padding: "10px 12px",
-  borderRadius: 10,
-  border: "1px solid #1f2937",
-  background: "#0f172a",
-  color: "#e5e7eb",
-  width: "100%",
-};
-
-const btnPrimary: React.CSSProperties = {
-  padding: "10px 14px",
-  background: "#0ea5e9",
-  border: "none",
-  borderRadius: 10,
-  color: "#fff",
-  fontWeight: 700,
-  cursor: "pointer",
-};
-const btnPrimaryDisabled: React.CSSProperties = {
-  ...btnPrimary,
-  background: "#075985",
-  opacity: 0.6,
-  cursor: "not-allowed",
-  filter: "saturate(70%)",
-  boxShadow: "none",
-  pointerEvents: "none",
-};
-const btnCircleBase: React.CSSProperties = {
-  width: 52,
-  height: 52,
-  borderRadius: "999px",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  border: "1px solid #1f2937",
-  background: "#0f172a",
-  color: "#e5e7eb",
-  cursor: "pointer",
-};
-const btnCircle: React.CSSProperties = { ...btnCircleBase };
-const btnCircleDanger: React.CSSProperties = {
-  ...btnCircleBase,
-  background: "#7f1d1d",
-  borderColor: "#7f1d1d",
-};
-
-const circleRow: React.CSSProperties = {
-  display: "flex",
-  gap: 12,
-  justifyContent: "center",
-  marginTop: 12,
-};
-
-const placeholderCam: React.CSSProperties = {
-  width: 420,
-  borderRadius: 12,
-  border: "1px solid #1f2937",
-  background: "#0b1220",
-  color: "#e5e7eb",
-  padding: 16,
-  display: "grid",
-  placeItems: "center",
-  textAlign: "center",
-};
-
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
+  wrap: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 14,
+    alignItems: "center",
+    height: "100%",
+  },
+  row: {
+    display: "flex",
+    alignItems: "flex-end",
+    gap: 12,
+    width: "min(680px, 92vw)",
+  },
+  input: {
+    padding: "10px 12px",
+    borderRadius: 10,
+    border: "1px solid #1f2937",
+    background: "#0f172a",
+    color: "#e5e7eb",
+    width: "100%",
+  },
+  btnPrimary: {
+    padding: "10px 14px",
+    background: "#0ea5e9",
+    border: "none",
+    borderRadius: 10,
+    color: "#fff",
+    fontWeight: 700,
+    cursor: "pointer",
+  },
+  btnPrimaryDisabled: {
+    padding: "10px 14px",
+    border: "none",
+    borderRadius: 10,
+    color: "#fff",
+    fontWeight: 700,
+    background: "#075985",
+    opacity: 0.6,
+    cursor: "not-allowed",
+    filter: "saturate(70%)",
+    boxShadow: "none",
+    pointerEvents: "none",
+  },
+  btnCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: "999px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    border: "1px solid #1f2937",
+    background: "#0f172a",
+    color: "#e5e7eb",
+    cursor: "pointer",
+  },
+  btnCircleDanger: {
+    width: 52,
+    height: 52,
+    borderRadius: "999px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    border: "1px solid #7f1d1d",
+    color: "#e5e7eb",
+    cursor: "pointer",
+    background: "#7f1d1d",
+  },
+  circleRow: {
+    display: "flex",
+    gap: 12,
+    justifyContent: "center",
+    marginTop: 12,
+  },
+  placeholderCam: {
+    width: 420,
+    borderRadius: 12,
+    border: "1px solid #1f2937",
+    background: "#0b1220",
+    color: "#e5e7eb",
+    padding: 16,
+    display: "grid",
+    placeItems: "center",
+    textAlign: "center",
+  },
   callCard: {
     width: 340,
     borderRadius: 14,
@@ -516,15 +524,14 @@ const styles = {
     boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
     textAlign: "center" as const,
   },
-};
-
-const timerPill: React.CSSProperties = {
-  border: "1px solid #1f2937",
-  background: "#0f172a",
-  width: "fit-content",
-  margin: "12px auto",
-  borderRadius: 999,
-  padding: "6px 12px",
+  timerPill: {
+    border: "1px solid #1f2937",
+    background: "#0f172a",
+    width: "fit-content",
+    margin: "12px auto",
+    borderRadius: 999,
+    padding: "6px 12px",
+  },
 };
 
 /* Ícons */

@@ -47,10 +47,14 @@ export function WebRTCConnectorTelnyx({
     <div style={{ display: "grid", gap: 10, placeItems: "center" }}>
       <audio id="remoteMedia" autoPlay playsInline />
       {!connected ?
-        <button onClick={connect} disabled={connecting} style={btnPrimary}>
+        <button
+          onClick={connect}
+          disabled={connecting}
+          style={styles.btnPrimary}
+        >
           {connecting ? "Connecting..." : "Connect headset"}
         </button>
-      : <button onClick={disconnect} style={btnGhost}>
+      : <button onClick={disconnect} style={styles.btnGhost}>
           Disconnect
         </button>
       }
@@ -58,21 +62,23 @@ export function WebRTCConnectorTelnyx({
   );
 }
 
-const btnPrimary: React.CSSProperties = {
-  padding: "10px 14px",
-  background: "#0ea5e9",
-  border: "none",
-  borderRadius: 10,
-  color: "#fff",
-  fontWeight: 700,
-  cursor: "pointer",
-};
-const btnGhost: React.CSSProperties = {
-  padding: "10px 14px",
-  background: "#0f172a",
-  border: "1px solid #1f2937",
-  borderRadius: 10,
-  color: "#e5e7eb",
-  fontWeight: 600,
-  cursor: "pointer",
+const styles: Record<string, React.CSSProperties> = {
+  btnPrimary: {
+    padding: "10px 14px",
+    background: "#0ea5e9",
+    border: "none",
+    borderRadius: 10,
+    color: "#fff",
+    fontWeight: 700,
+    cursor: "pointer",
+  },
+  btnGhost: {
+    padding: "10px 14px",
+    background: "#0f172a",
+    border: "1px solid #1f2937",
+    borderRadius: 10,
+    color: "#e5e7eb",
+    fontWeight: 600,
+    cursor: "pointer",
+  },
 };

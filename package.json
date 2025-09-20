@@ -3,18 +3,30 @@
   "private": true,
   "packageManager": "pnpm@9.0.0",
   "scripts": {
-    "dev": "pnpm -r --parallel dev",
+    "clean:dists": "rimraf --glob \"packages/**/dist\" \"apps/**/dist\"",
+    "clean:mods": "pnpm -r exec rimraf node_modules && rimraf node_modules",
+    "clean:lock": "rimraf pnpm-lock.yaml",
+    "clean:store": "pnpm store prune",
+    "clean": "pnpm run clean:dists && pnpm run clean:mods && pnpm run clean:lock",
+    "build:pkg": "pnpm -r --filter ./packages/** run build",
+    "build:apps": "pnpm -r --filter ./apps/** run build",
+    "build": "pnpm run build:pkg && pnpm run build:apps",
+    "dev:pkg": "pnpm -r --filter ./packages/** exec tsup src/index.ts --dts --format esm,cjs --watch",
+    "dev:apps": "pnpm -r --filter ./apps/** run dev",
+    "dev": "concurrently -k -n PKG,APPS \"pnpm dev:pkg\" \"pnpm dev:apps\"",
     "lint": "eslint .",
     "format": "prettier --check .",
     "format:write": "prettier --write .",
-    "build": "pnpm -r --filter ./packages/** run build",
     "test": "pnpm -r --filter ./packages/** run test"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.42.0",
     "@typescript-eslint/parser": "^8.42.0",
+    "concurrently": "^8.2.2",
     "eslint": "^9.35.0",
     "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "tsup": "8.5.0",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2"
   }

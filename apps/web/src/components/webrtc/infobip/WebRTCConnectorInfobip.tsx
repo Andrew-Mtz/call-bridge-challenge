@@ -89,10 +89,14 @@ export function WebRTCConnectorInfobip({
       )}
 
       {!connected ?
-        <button onClick={connect} disabled={connecting} style={btnPrimary}>
+        <button
+          onClick={connect}
+          disabled={connecting}
+          style={styles.btnPrimary}
+        >
           {connecting ? "Connecting..." : "Connect headset"}
         </button>
-      : <button onClick={disconnect} style={btnDisconnect}>
+      : <button onClick={disconnect} style={styles.btnDisconnect}>
           Disconnect
         </button>
       }
@@ -100,31 +104,24 @@ export function WebRTCConnectorInfobip({
   );
 }
 
-const btnPrimary: React.CSSProperties = {
-  padding: "10px 14px",
-  background: "#0ea5e9",
-  border: "none",
-  borderRadius: 10,
-  color: "#fff",
-  fontWeight: 700,
-  cursor: "pointer",
-};
-/* const btnDisconnectGhost: React.CSSProperties = {
-  padding: "10px 14px",
-  background: "#0f172a",
-  border: "1px solid #7f1d1d", // red-800
-  borderRadius: 10,
-  color: "#fecaca", // red-100 (texto)
-  fontWeight: 600,
-  cursor: "pointer",
-}; */
-const btnDisconnect: React.CSSProperties = {
-  padding: "10px 14px",
-  background: "#dc2626", // red-600
-  border: "1px solid #b91c1c", // red-700
-  borderRadius: 10,
-  color: "#fff",
-  fontWeight: 700,
-  cursor: "pointer",
-  boxShadow: "0 6px 16px rgba(220,38,38,0.18)", // sutil glow
+const styles: Record<string, React.CSSProperties> = {
+  btnPrimary: {
+    padding: "10px 14px",
+    background: "#0ea5e9",
+    border: "none",
+    borderRadius: 10,
+    color: "#fff",
+    fontWeight: 700,
+    cursor: "pointer",
+  },
+  btnDisconnect: {
+    padding: "10px 14px",
+    background: "#dc2626",
+    border: "1px solid #b91c1c",
+    borderRadius: 10,
+    color: "#fff",
+    fontWeight: 700,
+    cursor: "pointer",
+    boxShadow: "0 6px 16px rgba(220,38,38,0.18)",
+  },
 };

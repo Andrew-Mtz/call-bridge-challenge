@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "build": "tsup src/index.ts --dts --format esm,cjs",
-    "test": "vitest run"
+    "clean": "rimraf dist",
+    "dev": "tsup src/index.ts --dts --format esm,cjs --watch"
   },
   "dependencies": {
     "@call-provider/core": "workspace:^",

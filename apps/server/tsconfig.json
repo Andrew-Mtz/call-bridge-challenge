@@ -11,7 +11,10 @@
       "@core/*": ["core/*"],
       "@lib/*": ["lib/*"],
       "@providers/*": ["providers/*"]
-    }
+    },
+    "types": ["node"],
+    "lib": ["ES2022"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
 }

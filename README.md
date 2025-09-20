@@ -23,32 +23,38 @@ UI is built with Vite + React. There are **two internal packages** (one for Teln
 
 ## Install & Run
 
-# 1. Clone
+### 1. Clone
 
+```bash
 git clone https://github.com/Andrew-Mtz/call-bridge-challenge.git
 cd call-bridge-challenge
+```
 
-# 5. Environment variables
+### 2. Environment variables
 
-# Copy the examples and fill with your credentials
+#### Copy the examples and fill with your credentials
 
+```bash
 cp apps/server/.env.example apps/server/.env
 cp apps/web/.env.example apps/web/.env
+```
 
-# On Windows (PowerShell):
+#### On Windows (PowerShell):
 
+```powershell
 Copy-Item apps/server/.env.example apps/server/.env
 Copy-Item apps/web/.env.example apps/web/.env
+```
 
-# 3. Install deps (root + workspaces)
+### 3. Install deps (root + workspaces)
 
 pnpm install
 
-# 4. Build internal packages (produces dist/)
+### 4. Build internal packages (produces dist/)
 
 pnpm run build:pkg
 
-# 5. Start dev (packages in watch + apps)
+### 5. Start dev (packages in watch + apps)
 
 pnpm run dev
 

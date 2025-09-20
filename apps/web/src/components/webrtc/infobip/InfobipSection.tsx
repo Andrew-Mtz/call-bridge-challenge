@@ -370,33 +370,50 @@ function InfobipInner({
                     </button>
                   </div>
                 </>
-              : <div style={styles.callCard}>
-                  <div style={{ fontWeight: 700, fontSize: 16 }}>
-                    {callStatusLabel}
-                  </div>
-                  <div style={{ opacity: 0.9, marginTop: 6 }}>
-                    With: <strong>{peerName || "Unknown"}</strong>
-                  </div>
-                  <div style={styles.timerPill}>
-                    <strong>Call time:</strong> <Timer running />
-                  </div>
-                  <div style={styles.circleRow}>
-                    <button
-                      onClick={toggleMute}
-                      style={styles.btnCircle}
-                      aria-label="Toggle mute"
-                    >
-                      {ibCtx.state.muted ?
-                        <IconMicOff />
-                      : <IconMic />}
-                    </button>
-                    <button
-                      onClick={hangup}
-                      style={styles.btnCircleDanger}
-                      aria-label="Hang up"
-                    >
-                      <IconPhoneDown />
-                    </button>
+              : <div style={styles.callCardContainer}>
+                  <div style={styles.callCard}>
+                    <div style={{ fontWeight: 700, fontSize: 16 }}>
+                      {callStatusLabel}
+                    </div>
+                    <div style={{ opacity: 0.9, marginTop: 6 }}>
+                      With: <strong>{peerName || "Unknown"}</strong>
+                    </div>
+                    <div style={styles.timerPill}>
+                      <strong>Call time:</strong>{" "}
+                      <Timer running={ibCtx.state.isActive} />
+                    </div>
+                    <div style={styles.circleRow}>
+                      {
+                        ibCtx.state.isActive ?
+                          <>
+                            <button
+                              onClick={toggleMute}
+                              style={styles.btnCircle}
+                              aria-label="Toggle mute"
+                            >
+                              {ibCtx.state.muted ?
+                                <IconMicOff />
+                              : <IconMic />}
+                            </button>
+                            <button
+                              onClick={hangup}
+                              style={styles.btnCircleDanger}
+                              aria-label="Hang up"
+                            >
+                              <IconPhoneDown />
+                            </button>
+                          </>
+                          // todavía está "Calling…" (ringing/connecting): sólo permitir cancelar
+                        : <button
+                            onClick={hangup}
+                            style={styles.btnCircleDanger}
+                            aria-label="Cancel call"
+                          >
+                            <IconPhoneDown />
+                          </button>
+
+                      }
+                    </div>
                   </div>
                 </div>
               }
@@ -514,6 +531,11 @@ const styles: Record<string, React.CSSProperties> = {
     placeItems: "center",
     textAlign: "center",
   },
+  callCardContainer: {
+    flex: 1,
+    display: "flex",
+    alignItems: "center",
+  },
   callCard: {
     width: 340,
     borderRadius: 14,
@@ -522,7 +544,8 @@ const styles: Record<string, React.CSSProperties> = {
     border: "1px solid #1f2937",
     color: "#e5e7eb",
     boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
-    textAlign: "center" as const,
+    textAlign: "center",
+    height: "fit-content",
   },
   timerPill: {
     border: "1px solid #1f2937",

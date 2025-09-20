@@ -35,7 +35,7 @@ export function ProviderToggle({ value, onChange }: Props) {
   return (
     <div style={{ display: "flex", gap: 8 }}>
       <Item id="telnyx" label="Telnyx" />
-      <Item id="sinch" label="Sinch" />
+      <Item id="sinch" label="Sinch" disabled />
       <Item id="infobip" label="Infobip" />
     </div>
   );

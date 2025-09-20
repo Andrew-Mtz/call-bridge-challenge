@@ -1,5 +1,5 @@
 {
-  "name": "@call-provider/telnyx",
+  "name": "@call-provider/infobip",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
@@ -13,8 +13,7 @@
     "dev": "tsup src/index.ts --dts --format esm,cjs --watch"
   },
   "dependencies": {
-    "@call-provider/core": "workspace:^",
-    "tweetnacl": "^1.0.3"
+    "@call-provider/core": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "^24.3.1",

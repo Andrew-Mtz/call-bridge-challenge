@@ -19,22 +19,20 @@ export interface DialParams {
   leg: Leg;
   commandId?: string;
 }
-
 export interface DialResult {
   accepted: boolean;
 }
-
 export interface BridgeParams {
   aCallControlId: string;
   bCallControlId: string;
 }
 
-export interface WebRTCTokenParams {
-  credentialId: string; // Telnyx telephony credential ID
-}
+export type WebRTCTokenParams =
+  | { credentialId: string } // Telnyx
+  | { identity: string; displayName?: string }; // Infobip
 
 export interface WebRTCTokenResult {
-  token: string; // JWT to use in @telnyx/webrtc
+  token: string;
 }
 
 export interface CallProvider {

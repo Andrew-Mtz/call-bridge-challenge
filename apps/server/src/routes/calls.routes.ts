@@ -4,13 +4,14 @@ import { v4 as uuid } from "uuid";
 import { sessions } from "@core/state";
 import { env } from "@config";
 import { publishSession } from "@core/events";
-import { getProvider } from "@providers/factory";
+import { getProviderByName } from "@providers/factory";
 
 const router = Router();
-const provider = getProvider();
 
 const PhoneE164 = z.string().regex(/^\+\d{7,15}$/);
+
 const StartSchema = z.object({
+  provider: z.enum(["telnyx", "infobip"]).default("telnyx"),
   fromPhone: PhoneE164,
   toPhone: PhoneE164,
 });
@@ -20,12 +21,22 @@ router.post("/bridge", async (req, res) => {
   if (!parsed.success)
     return res.status(400).json({ error: parsed.error.flatten() });
 
-  const { fromPhone, toPhone } = parsed.data;
+  const { provider: providerName, fromPhone, toPhone } = parsed.data;
   const sessionId = uuid();
+
+  if (providerName === "infobip") {
+    return res.status(400).json({
+      error:
+        "PSTN bridge is not implemented for Infobip. Use Telnyx or WebRTC flow.",
+    });
+  }
+
+  const provider = getProviderByName(providerName);
 
   // create session and mark leg A
   sessions.set(sessionId, {
     sessionId,
+    provider: providerName,
     fromPhone,
     toPhone,
     a: { status: "dialing" },
@@ -34,18 +45,13 @@ router.post("/bridge", async (req, res) => {
   });
   publishSession(sessionId, sessions.get(sessionId)!);
 
-  // client_state base64 to correlate webhooks from A
-  const clientStateA = Buffer.from(
-    JSON.stringify({ sessionId, leg: "A" })
-  ).toString("base64");
-
   try {
     await provider.dial({
       to: fromPhone,
       from: env.TELNYX_NUMBER!,
       sessionId,
       leg: "A",
-      commandId: `dial:${sessionId}:A:1`,
+      commandId: `dial:${sessionId}:A:1:${providerName}`,
     });
 
     return res.status(202).json({ sessionId });

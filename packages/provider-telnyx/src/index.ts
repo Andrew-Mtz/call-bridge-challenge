@@ -10,6 +10,10 @@ import type {
 import { makeClient, type TelnyxConfig } from "./client";
 import { verifySignature as telnyxVerify } from "./verify";
 
+function hasCredentialId(p: WebRTCTokenParams): p is { credentialId: string } {
+  return typeof (p as any)?.credentialId === "string";
+}
+
 export type CreateTelnyxProviderOptions = TelnyxConfig & {
   publicKeyB64: string;
 };
@@ -27,6 +31,9 @@ export function createTelnyxProvider(
       return http.bridge(p);
     },
     async createWebRTCToken(p: WebRTCTokenParams): Promise<WebRTCTokenResult> {
+      if (!hasCredentialId(p)) {
+        throw new Error("Telnyx WebRTC requires { credentialId }");
+      }
       const { token } = await http.createWebRTCToken(p.credentialId);
       return { token };
     },

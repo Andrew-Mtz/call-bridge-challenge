@@ -1,4 +1,5 @@
 export type StartBridgeBody = {
+  provider: "telnyx" | "sinch" | "infobip";
   fromPhone: string;
   toPhone: string;
 };
@@ -27,4 +28,26 @@ export async function startBridge(
   } catch {
     throw new Error(`Unexpected response: ${text}`);
   }
+}
+
+export async function getWebRTCToken(
+  provider: "telnyx" | "sinch" | "infobip",
+  opts?: { identity?: string; displayName?: string }
+) {
+  const url = `${BASE}/api/webrtc/token?provider=${provider}`;
+  const body =
+    provider === "infobip" ?
+      {
+        identity: opts?.identity ?? crypto.randomUUID(),
+        displayName: opts?.displayName,
+      }
+    : {}; // telnyx dont need any params
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json() as Promise<{ token: string }>;
 }

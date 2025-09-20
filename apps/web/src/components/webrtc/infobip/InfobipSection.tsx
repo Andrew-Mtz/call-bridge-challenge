@@ -379,25 +379,40 @@ function InfobipInner({
                       With: <strong>{peerName || "Unknown"}</strong>
                     </div>
                     <div style={styles.timerPill}>
-                      <strong>Call time:</strong> <Timer running />
+                      <strong>Call time:</strong>{" "}
+                      <Timer running={ibCtx.state.isActive} />
                     </div>
                     <div style={styles.circleRow}>
-                      <button
-                        onClick={toggleMute}
-                        style={styles.btnCircle}
-                        aria-label="Toggle mute"
-                      >
-                        {ibCtx.state.muted ?
-                          <IconMicOff />
-                        : <IconMic />}
-                      </button>
-                      <button
-                        onClick={hangup}
-                        style={styles.btnCircleDanger}
-                        aria-label="Hang up"
-                      >
-                        <IconPhoneDown />
-                      </button>
+                      {
+                        ibCtx.state.isActive ?
+                          <>
+                            <button
+                              onClick={toggleMute}
+                              style={styles.btnCircle}
+                              aria-label="Toggle mute"
+                            >
+                              {ibCtx.state.muted ?
+                                <IconMicOff />
+                              : <IconMic />}
+                            </button>
+                            <button
+                              onClick={hangup}
+                              style={styles.btnCircleDanger}
+                              aria-label="Hang up"
+                            >
+                              <IconPhoneDown />
+                            </button>
+                          </>
+                          // todavía está "Calling…" (ringing/connecting): sólo permitir cancelar
+                        : <button
+                            onClick={hangup}
+                            style={styles.btnCircleDanger}
+                            aria-label="Cancel call"
+                          >
+                            <IconPhoneDown />
+                          </button>
+
+                      }
                     </div>
                   </div>
                 </div>

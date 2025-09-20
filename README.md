@@ -28,59 +28,29 @@ UI is built with Vite + React. There are **two internal packages** (one for Teln
 git clone https://github.com/Andrew-Mtz/call-bridge-challenge.git
 cd call-bridge-challenge
 
-# 2. Environment variables
+# 5. Environment variables
 
 # Copy the examples and fill with your credentials
 
-Create a .env in the apps/server project, copy and paste the .env.example and fill with your credentials.
-Do the same for apps/web project.
+cp apps/server/.env.example apps/server/.env
+cp apps/web/.env.example apps/web/.env
 
-# 3. pnpm run build
+# On Windows (PowerShell):
 
-# 4. pnpm install
+Copy-Item apps/server/.env.example apps/server/.env
+Copy-Item apps/web/.env.example apps/web/.env
 
-# # Calling System — Challenge
+# 3. Install deps (root + workspaces)
 
-A small demo app integrating:
+pnpm install
 
-- **PSTN ↔ PSTN** (Telnyx)
-- **WebRTC ↔ PSTN** (Telnyx)
-- **WebRTC ↔ WebRTC** (Infobip)
+# 4. Build internal packages (produces dist/)
 
-UI is built with Vite + React. There are **two internal packages** (one for Telnyx, one for Infobip) and an API that receives webhooks to keep call state in sync.
+pnpm run build:pkg
 
----
+# 5. Start dev (packages in watch + apps)
 
-## Requirements
-
-- Node 18+
-- pnpm (or npm/yarn — examples use `pnpm`)
-- **Telnyx** account with Voice API
-- **Infobip** account with WebRTC enabled
-- **ngrok** (to expose webhooks from your local API)
-- Browser with microphone permission (and camera if testing video)
-
----
-
-## Install & Run
-
-# 1. Clone
-
-git clone https://github.com/Andrew-Mtz/call-bridge-challenge.git
-cd call-bridge-challenge
-
-# 2. Environment variables
-
-# Copy the examples and fill with your credentials
-
-Create a .env in the apps/server project, copy and paste the .env.example and fill with your credentials.
-Do the same for apps/web project.
-
-# 3. pnpm run build
-
-# 4. pnpm install
-
-# 5. pnpm run dev
+pnpm run dev
 
 ---
 
@@ -92,8 +62,8 @@ Do the same for apps/web project.
 │   ├── telnyx/
 │   └── infobip/
 ├── apps/
-│   ├── Server
-│   └── Web
+│   ├── Server/ # Node server (webhooks, tokens, state)
+│   └── Web/    # Vite + React UI
 ├── tsconfig.base.json
 ├── package.json
 ├──.eslintrc.json

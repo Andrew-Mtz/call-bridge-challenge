@@ -19,8 +19,6 @@ export function IncomingCallModal({
 
   const isVideo = mode === "video";
 
-  console.log(mode);
-
   return (
     <div
       style={{

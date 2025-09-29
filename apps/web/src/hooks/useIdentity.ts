@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 export function useIdentity(storageKey: string) {
+  const displayKey = `${storageKey}:displayName`;
   const [myIdentity, setMyIdentity] = useState<string>(() => {
     try {
       return localStorage.getItem(storageKey) || "";
@@ -8,7 +9,18 @@ export function useIdentity(storageKey: string) {
       return "";
     }
   });
-  const [customIdentity, setCustomIdentity] = useState(myIdentity);
+  const [displayName, setDisplayName] = useState<string>(() => {
+    try {
+      return (
+        localStorage.getItem(displayKey) ||
+        localStorage.getItem(storageKey) ||
+        ""
+      );
+    } catch {
+      return "";
+    }
+  });
+
   const [copied, setCopied] = useState(false);
 
   function persistIdentity(id: string) {
@@ -18,9 +30,31 @@ export function useIdentity(storageKey: string) {
     } catch {
       /* empty */
     }
+    setDisplayName(prev => {
+      if (!prev) {
+        try {
+          localStorage.setItem(displayKey, id);
+        } catch {
+          /* empty */
+        }
+        return id;
+      }
+      return prev;
+    });
   }
+
+  function persistDisplayName(name: string) {
+    setDisplayName(name);
+    try {
+      localStorage.setItem(displayKey, name);
+    } catch {
+      /* empty */
+    }
+  }
+
   function randomize() {
-    setCustomIdentity(crypto.randomUUID());
+    const rnd = crypto.randomUUID();
+    persistIdentity(rnd);
   }
   async function copy() {
     if (!myIdentity) return;
@@ -35,8 +69,9 @@ export function useIdentity(storageKey: string) {
 
   return {
     myIdentity,
-    customIdentity,
-    setCustomIdentity,
+    displayName,
+    setDisplayName,
+    persistDisplayName,
     persistIdentity,
     randomize,
     copy,

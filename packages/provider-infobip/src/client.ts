@@ -28,8 +28,8 @@ export class InfobipClient {
   async createWebRTCToken(params: { identity: string; displayName?: string }) {
     const body = {
       identity: params.identity,
+      displayName: params.displayName,
       timeToLive: 43200,
-      ...(params.displayName ? { displayName: params.displayName } : {}),
     };
     const data = await this.req<any>("/webrtc/1/token", {
       method: "POST",

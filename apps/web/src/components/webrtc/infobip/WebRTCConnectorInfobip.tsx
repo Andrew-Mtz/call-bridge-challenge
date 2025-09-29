@@ -32,18 +32,17 @@ export function WebRTCConnectorInfobip({
 
     setConnecting(true);
     try {
-      const chosenId =
-        ib.state.connected ?
-          id.myIdentity
-        : id.myIdentity || crypto.randomUUID();
+      const chosenId = id.myIdentity ? id.myIdentity : crypto.randomUUID();
       id.persistIdentity(chosenId);
 
-      const displayName = id.customIdentity?.trim() || undefined;
+      const chosenName = (id.displayName || "").trim() || chosenId;
 
       const { token } = await getWebRTCToken("infobip", {
         identity: chosenId,
-        displayName: displayName || chosenId,
+        displayName: chosenName,
       });
+
+      id.persistDisplayName(chosenName);
 
       ib.connect(token, () => {
         setConnecting(false);
@@ -70,13 +69,12 @@ export function WebRTCConnectorInfobip({
         placeItems: "center",
       }}
     >
-      {/* sólo audio remoto; el video remoto lo pinta InfobipSection */}
       <audio id="remoteMedia" autoPlay playsInline />
 
       {!connected && (
         <IdentityForm
-          value={id.customIdentity}
-          onChange={id.setCustomIdentity}
+          value={id.displayName}
+          onChange={id.setDisplayName}
           onRandom={id.randomize}
         />
       )}
